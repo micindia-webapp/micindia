@@ -1,4 +1,4 @@
-import { Schema, model } from 'mongoose';
+const { Schema, model } = require('mongoose');
 
 const driveSchema = new Schema({
     heading:{
@@ -23,5 +23,4 @@ const driveSchema = new Schema({
     }
 })
 
-const Drive = model('drives', driveSchema);
-export default Drive;
+module.exports.Drive =  model('drives', driveSchema);

@@ -1,12 +1,11 @@
 {
-  "name": "micindia-backend",
+  "name": "micindia",
   "version": "1.0.0",
   "description": "This is backend for micindia.org",
-  "main": "index.js",
-  "type": "module",
+  "main": "app.js",
   "scripts": {
-    "start": "node index.js",
-    "dev": "nodemon index.js"
+    "start": "node app.js",
+    "dev": "nodemon app.js"
   },
   "author": "subham sahu",
   "license": "ISC",
