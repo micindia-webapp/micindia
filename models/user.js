@@ -11,7 +11,14 @@ const userSchema = new Schema({
     },
     email:{
         type:String,
-        required:true
+        required:true,
+        unique:true
+    },
+    password:{
+        type:String,
+    },
+    token:{
+        type:String
     },
     dob:{
         type:String,
@@ -31,4 +38,4 @@ const userSchema = new Schema({
     }
 })
 
-module.exports.User = model('users', userSchema);
+module.exports.User = model('user', userSchema);

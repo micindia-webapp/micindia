@@ -23,4 +23,4 @@ const driveSchema = new Schema({
     }
 })
 
-module.exports.Drive =  model('drives', driveSchema);
+module.exports.Drive =  model('drive', driveSchema);

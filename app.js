@@ -19,16 +19,6 @@ app.get('/', (req, res) => {
     res.send("Welcome to micindia.org")
 })
 
-//GET https://micindia.org/micnews
-app.get('/micnews', async (req, res) => {
-    try{
-        const data = await News.find();
-        res.send(data);
-    }catch(err){
-        console.log(err);
-    }
-})
-
 //GET https://micindia.org/users
 app.get('/users', async (req, res) => {
     try{
@@ -43,6 +33,16 @@ app.get('/users', async (req, res) => {
 app.get('/drives', async (req, res) => {
     try{
         const data = await Drive.find();
+        res.send(data);
+    }catch(err){
+        console.log(err);
+    }
+})
+
+//GET https://micindia.org/micnews
+app.get('/micnews', async (req, res) => {
+    try{
+        const data = await News.find();
         res.send(data);
     }catch(err){
         console.log(err);
