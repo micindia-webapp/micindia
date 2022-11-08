@@ -3,30 +3,35 @@ const { Schema, model } = require('mongoose');
 const userSchema = new Schema({
     firstname:{
         type:String,
-        required:true
+        required:[true, "Fill all required fields"],
+        lowercase: true
     },
     lastname:{
         type:String,
-        required:true
+        required:[true, "Fill all required fields"],
+        lowercase: true
     },
     email:{
         type:String,
-        required:true,
-        unique:true
+        required:[true, "Fill all required fields"],
+        unique:true,
+        lowercase: true
     },
     password:{
         type:String,
+        required:[true, "Fill all required fields"],
     },
     token:{
         type:String
     },
     dob:{
         type:String,
-        required:true
+        required:[true, "Fill all required fields"],
     },
     location:{
         type:String,
-        default:""
+        default:"remote",
+        lowercase: true
     },
     admin:{
         type:Boolean,
@@ -34,7 +39,7 @@ const userSchema = new Schema({
     },
     designation:{
         type:String,
-        default:"Volunteer(Trainee)"
+        default:"trainee"
     }
 })
 

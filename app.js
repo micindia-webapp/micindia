@@ -2,7 +2,8 @@
 require('dotenv').config();
 
 //connect database
-require('./config/db');
+const connectDB = require('./config/db');
+connectDB()
 
 //import models
 const News = require('./models/news')
@@ -31,39 +32,34 @@ app.post('/register', async (req, res) => {
         const {firstname, lastname, email, password, dob, location} = req.body;
 
         if(!(firstname && lastname && email && password && dob && location)){
-            res.status(401).send("Fill all required details")
-        }
-
-        if(!(/^[a-zA-Z0-9+_.-]+@[a-zA-Z0-9.-]+$/.test(email))){
+            res.status(400).send("Fill all required details")
+        }else if(!(/^[a-zA-Z0-9+_.-]+@[a-zA-Z0-9.-]+$/.test(email))){
             res.status(401).send("Invalid email address")
-        }
-
-        let user = await User.findOne({email})
-
-        if(user){
+        }else if(await User.findOne({email})){
             res.status(401).send("User alerady exists")
-        }
+        }else{
+            const encrptPassword = await bcrypt.hash(password, 10);
 
-        const encrptPassword = await bcrypt.hash(password, 10);
+            const user = await User.create({
+                firstname,
+                lastname,
+                email,
+                password:encrptPassword,
+                dob,
+                location
+            })
+            
+            const token = jwt.sign({
+                id: user._id, email
+            }, 'shhhhh', {expiresIn: '2h'})
+            
+            user.token = token
+            await user.save();
+            user.password = "*******";
+            
+            res.status(201).json(user)
+    }
 
-        user = await User.create({
-            firstname,
-            lastname,
-            email,
-            encrptPassword,
-            dob,
-            location
-        })
-        
-        const token = jwt.sign({
-            id: user._id, email
-        }, 'shhhhh', {expiresIn: '2h'})
-        
-        user.token = token
-        await user.save();
-        user.password = "*******";
-        
-        res.status(201).json(user)
     }catch(error){
         console.log(error);  
     }    
@@ -76,36 +72,30 @@ app.get("/login", async (req, res) => {
         
         if(!(email && password)){
             res.status(401).send("Fill all required details")
-        }
-
-        if(!(/^[a-zA-Z0-9+_.-]+@[a-zA-Z0-9.-]+$/.test(email))){
-            res.status(401).send("Invalid email address")
-        }
-
-        let user = await User.findOne({email});
-
-        if(!user){
-            res.status(401).send("User does not exits")
-        }
+        }else{
+            let user = await User.findOne({email : email});
+            console.log(user)
+            if(!user){
+                res.status(401).send("User does not exits")
+            }else if(!(await bcrypt.compare(password, user.password))){
+                res.status(401).send("Email or password is incorrect")
+            }else{
+                const token = await jwt.sign({
+                    id: user._id, email
+                }, 'shhhhh', {expiresIn: '2h'})
         
-        if(!(await bcrypt.compare(password, user.password))){
-            res.status(401).send("Email or password is incorrect")
+                user.token = token;
+                await user.save();
+                user.password = "*******";
+                
+                const options = {
+                    expires: new Date(Date.now() + 3000),
+                    httpOnly: true
+                }
+                
+                res.status(200).cookie("token", token, options)
+            }
         }
-
-        const token = jwt.sign({
-            id: user._id, email
-        }, 'shhhhh', {expiresIn: '2h'})
-
-        user.token = token;
-        await user.save();
-        user.password = undefined;
-        
-        const options = {
-            expires: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000),
-            httpOnly: true
-        }
-
-        res.status(200).cookie("token", token, options)
     }catch(error){
         console.log(error);
     }
